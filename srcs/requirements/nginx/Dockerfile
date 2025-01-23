@@ -1,4 +1,4 @@
-FROM debian:bookworm 
+FROM debian:v11 
 
 RUN apt-get update && \
     apt-get install -y nginx 
@@ -8,6 +8,6 @@ COPY tools/server.crt /usr/share/nginx/html/
 COPY tools/server.key /usr/share/nginx/html/
 COPY conf/nginx.conf /etc/nginx/nginx.conf
 
-EXPOSE 80 443
+EXPOSE 443
 
 CMD ["nginx", "-g", "daemon off;"] 
