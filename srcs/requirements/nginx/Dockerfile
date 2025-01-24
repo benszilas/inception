@@ -1,13 +1,8 @@
-FROM debian:v11 
+FROM debian:11.0 
 
 RUN apt-get update && \
     apt-get install -y nginx 
 
-COPY tools/index.html /usr/share/nginx/html/
-COPY tools/server.crt /usr/share/nginx/html/
-COPY tools/server.key /usr/share/nginx/html/
-COPY conf/nginx.conf /etc/nginx/nginx.conf
-
 EXPOSE 443
 
-CMD ["nginx", "-g", "daemon off;"] 
+CMD ["nginx", "-g", "daemon off;"]
