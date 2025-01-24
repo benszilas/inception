@@ -1,0 +1,23 @@
+services:
+  MariaDB:
+    build: requirements/mariadb
+    volumes:
+      - "/home/bszilas/data/DB:/var/lib/mysql"
+
+  WordPress:
+    build: requirements/wordpress
+    depends_on:
+      - serviceName: MariaDB
+    volumes:
+      - "/home/bszilas/data/wordpress:/var/www/html"
+
+  NGINX:
+    build: requirements/nginx
+    ports:
+      - "443:443"
+    depends_on:
+      - serviceName: MariaDB
+      - serviceName: WordPress
+    volumes:
+      - "/home/bszilas/data/wordpress:/var/www/html"
+    
