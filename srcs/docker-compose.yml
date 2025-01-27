@@ -1,23 +1,38 @@
 services:
-  MariaDB:
-    build: requirements/mariadb
+  wordpress:
+    build:
+      context: requirements/wordpress
+    container_name: wordpress
     volumes:
-      - "/home/bszilas/data/DB:/var/lib/mysql"
-
-  WordPress:
-    build: requirements/wordpress
+      - ../data/wordpress:/var/www/html
+      - ./requirements/wordpress/conf:/tmp
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: wp_user
+      WORDPRESS_DB_PASSWORD: 
+      WORDPRESS_DB_NAME: wp_db
     depends_on:
-      - serviceName: MariaDB
+      - db
+    entrypoint: ["/bin/bash", "/tmp/wp-cli-setup.sh"]
+      
+  db:
+    image: mariadb:10.5
+    container_name: mariadb
     volumes:
-      - "/home/bszilas/data/wordpress:/var/www/html"
+      - ../data/db:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: wp_db
+      MYSQL_USER: wp_user
+      MYSQL_PASSWORD: wp_password
+      MYSQL_ROOT_PASSWORD: 
 
-  NGINX:
-    build: requirements/nginx
+  nginx:
+    image: nginx:latest
+    container_name: nginx
     ports:
-      - "443:443"
-    depends_on:
-      - serviceName: MariaDB
-      - serviceName: WordPress
+      - "8080:80"
     volumes:
-      - "/home/bszilas/data/wordpress:/var/www/html"
-    
+      - ./requirements/nginx/conf/nginx.conf:/etc/nginx/nginx.conf
+      - ./wordpress:/var/www/html
+    depends_on:
+      - wordpress
