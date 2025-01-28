@@ -16,10 +16,10 @@ COPY ./conf/wp-cli-setup.sh /tmp/wp-cli-setup.sh
 RUN chmod +x /tmp/wp-cli-setup.sh
 	
 # Add a non-root user
-RUN useradd -m wpuser && chown -R puser:www-data /var/www/html && chown puser:www-data /tmp/wp-cli-setup.sh
+# RUN useradd -m wpuser && chown -R puser:www-data /var/www/html && chown puser:www-data /tmp/wp-cli-setup.sh
 
 # Switch to non-root user
-USER wpuser
+# USER wpuser
 
 # Set entrypoint
-ENTRYPOINT ["/bin/bash", "/tmp/wp-cli-setup.sh"]
+ENTRYPOINT ["/tmp/wp-cli-setup.sh"]
