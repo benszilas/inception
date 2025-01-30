@@ -7,7 +7,6 @@ services:
       - ../data/wordpress:/var/www/html
     restart: on-failure
     environment:
-      - X=y
       - WORDPRESS_DB_HOST=${WORDPRESS_DB_HOST}
       - WORDPRESS_DB_USER=${WORDPRESS_DB_USER}
       - WORDPRESS_DB_PASSWORD=${WORDPRESS_DB_PASSWORD}
@@ -15,11 +14,11 @@ services:
       - WP_ADMIN=${WP_ADMIN}
       - WP_ADMIN_PW=${WP_ADMIN_PW}
       - WP_ADMIN_EMAIL=${WP_ADMIN_EMAIL}
-      - WP_SECOND_USER=${WP_SECOND_USER}
-      - WP_SECOND_USER_PW=${WP_SECOND_USER_PW}
       - DOMAIN_NAME=${DOMAIN_NAME}
     depends_on:
       - db
+    # networks:
+    #   - inception-connection
       
   db:
     image: mariadb:10.5
@@ -32,9 +31,10 @@ services:
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    # networks:
+    #   - inception-connection
 
   nginx:
-    # image: nginx:latest
     build:
       context: requirements/nginx
     container_name: nginx
@@ -42,9 +42,13 @@ services:
     ports:
       - "8080:80"
     volumes:
-      # - ./requirements/nginx/conf/:/etc/nginx/conf.d/
       - ../data/wordpress:/var/www/html
     environment:
       - DOMAIN_NAME=${DOMAIN_NAME}
     depends_on:
       - wordpress
+    # networks:
+    #   - inception-connection
+
+# networks:
+#   inception-connection:
