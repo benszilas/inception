@@ -1,2 +1,5 @@
-#database files
+#data
 data/
+
+#secrest
+secrets/

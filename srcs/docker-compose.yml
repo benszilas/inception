@@ -1,50 +1,59 @@
 services:
-  wordpress:
-    build:
-      context: requirements/wordpress
-    container_name: wordpress
-    volumes:
-      - ../data/wordpress:/var/www/html
-    restart: on-failure
-    environment:
-      - X=y
-      - WORDPRESS_DB_HOST=${WORDPRESS_DB_HOST}
-      - WORDPRESS_DB_USER=${WORDPRESS_DB_USER}
-      - WORDPRESS_DB_PASSWORD=${WORDPRESS_DB_PASSWORD}
-      - WORDPRESS_DB_NAME=${WORDPRESS_DB_NAME}
-      - WP_ADMIN=${WP_ADMIN}
-      - WP_ADMIN_PW=${WP_ADMIN_PW}
-      - WP_ADMIN_EMAIL=${WP_ADMIN_EMAIL}
-      - WP_SECOND_USER=${WP_SECOND_USER}
-      - WP_SECOND_USER_PW=${WP_SECOND_USER_PW}
-      - DOMAIN_NAME=${DOMAIN_NAME}
-    depends_on:
-      - db
-      
   db:
-    image: mariadb:10.5
+    build:
+      context: requirements/mariadb
     container_name: mariadb
     volumes:
       - ../data/db:/var/lib/mysql
-    restart: on-failure
+    # restart: on-failure
     environment:
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
+      MYSQL_USER_PASSWORD_FILE: /run/secrets/mysql_user_password
+      MYSQL_USER: "${MYSQL_USER}"
+    secrets:
+      - mysql_root_password
+      - mysql_user_password
 
-  nginx:
-    # image: nginx:latest
-    build:
-      context: requirements/nginx
-    container_name: nginx
-    restart: on-failure
-    ports:
-      - "8080:80"
-    volumes:
-      # - ./requirements/nginx/conf/:/etc/nginx/conf.d/
-      - ../data/wordpress:/var/www/html
-    environment:
-      - DOMAIN_NAME=${DOMAIN_NAME}
-    depends_on:
-      - wordpress
+secrets:
+  mysql_root_password:
+    file: ../secrets/mysql_root_password.txt
+  mysql_user_password:
+    file: ../secrets/mysql_user_password.txt
+
+  # nginx:
+  #   image: nginx:latest
+  #   build:
+  #     context: requirements/nginx
+  #   container_name: nginx
+  #   restart: on-failure
+  #   ports:
+  #     - "8080:80"
+  #   volumes:
+  #     - ./requirements/nginx/conf/:/etc/nginx/conf.d/
+  #     - ../data/wordpress:/var/www/html
+  #   environment:
+  #     - DOMAIN_NAME=${DOMAIN_NAME}
+  #   depends_on:
+  #     - wordpress
+
+#   wordpress:
+#     build:
+#       context: requirements/wordpress
+#     container_name: wordpress
+#     volumes:
+#       - ../data/wordpress:/var/www/html
+#     restart: on-failure
+#     environment:
+#       - X=y
+#       - WORDPRESS_DB_HOST=${WORDPRESS_DB_HOST}
+#       - WORDPRESS_DB_USER=${WORDPRESS_DB_USER}
+#       - WORDPRESS_DB_PASSWORD=${WORDPRESS_DB_PASSWORD}
+#       - WORDPRESS_DB_NAME=${WORDPRESS_DB_NAME}
+#       - WP_ADMIN=${WP_ADMIN}
+#       - WP_ADMIN_PW=${WP_ADMIN_PW}
+#       - WP_ADMIN_EMAIL=${WP_ADMIN_EMAIL}
+#       - WP_SECOND_USER=${WP_SECOND_USER}
+#       - WP_SECOND_USER_PW=${WP_SECOND_USER_PW}
+#       - DOMAIN_NAME=${DOMAIN_NAME}
+#     depends_on:
+#       - db
