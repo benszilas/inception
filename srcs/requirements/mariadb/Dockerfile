@@ -1,4 +1,4 @@
-FROM alpine:3.11
+FROM alpine:3.20
 
 #https://wiki.alpinelinux.org/wiki/MariaDB
 RUN apk update && apk add --no-cache mariadb mariadb-client
@@ -10,4 +10,4 @@ COPY conf/setup.sh /tmp/setup.sh
 RUN chmod +x /tmp/setup.sh
 
 ENTRYPOINT ["/tmp/setup.sh"]
-CMD ["mysqld", "--user=mysql"]
+CMD ["mariadbd", "--user=mysql"]

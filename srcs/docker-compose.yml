@@ -7,9 +7,9 @@ services:
       - ../data/db:/var/lib/mysql
     restart: on-failure
     environment:
-      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
-      MYSQL_USER_PASSWORD_FILE: /run/secrets/mysql_user_password
-      MYSQL_USER: "${MYSQL_USER}"
+
+    env_file:
+      - fileName: .env
     secrets:
       - mysql_root_password
       - mysql_user_password
@@ -22,25 +22,28 @@ services:
       - ../data/wordpress:/var/www/html
     restart: on-failure
 #     environment:
-#       - X=y
-#       - WORDPRESS_DB_HOST=${WORDPRESS_DB_HOST}
-#       - WORDPRESS_DB_USER=${WORDPRESS_DB_USER}
-#       - WORDPRESS_DB_PASSWORD=${WORDPRESS_DB_PASSWORD}
-#       - WORDPRESS_DB_NAME=${WORDPRESS_DB_NAME}
 #       - WP_ADMIN=${WP_ADMIN}
 #       - WP_ADMIN_PW=${WP_ADMIN_PW}
 #       - WP_ADMIN_EMAIL=${WP_ADMIN_EMAIL}
 #       - WP_SECOND_USER=${WP_SECOND_USER}
 #       - WP_SECOND_USER_PW=${WP_SECOND_USER_PW}
 #       - DOMAIN_NAME=${DOMAIN_NAME}
+    secrets:
+      - mysql_root_password
+      - mysql_user_password
+      - wp_credentials
+    env_file:
+      - fileName: .env
     depends_on:
       - db
 
 secrets:
   mysql_root_password:
-    file: ../secrets/mysql_root_password.txt
+    file: ../secrets/db_root_password.txt
   mysql_user_password:
-    file: ../secrets/mysql_user_password.txt
+    file: ../secrets/db_password.txt
+  wp_credentials:
+    file: ../secrets/credentials.txt
 
   # nginx:
   #   image: nginx:latest
