@@ -9,22 +9,22 @@ MYSQL_USER_PASSWORD=$(cat "$MYSQL_USER_PASSWORD_FILE")
 chown -R mysql:mysql /var/lib/mysql
 
 if [ ! -d "/var/lib/mysql/mysql" ]; then
-mysql_install_db --user=mysql --datadir=/var/lib/mysql
+mariadb-install-db --user=mysql --datadir=/var/lib/mysql
 
 # Start MariaDB in background to set up users
-mysqld --skip-networking --user=mysql &
+mariadbd --user=mysql --skip-networking &
 pid="$!"
 
 # Secure database and create users
-mysql -u root <<-EOSQL
+mariadb -u root <<-EOF
     ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
     CREATE USER '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_USER_PASSWORD}';
     GRANT ALL PRIVILEGES ON *.* TO '${MYSQL_USER}'@'%' WITH GRANT OPTION;
     FLUSH PRIVILEGES;
-EOSQL
+EOF
 fi
 
 # Shutdown temp database
-mysqladmin -uroot -p"${MYSQL_ROOT_PASSWORD}" shutdown
+mysqladmin -uroot -p"${MYSQL_ROOT_PASSWORD}" shutdown 
 
 exec "$@"
