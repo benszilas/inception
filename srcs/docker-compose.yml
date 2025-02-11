@@ -6,13 +6,14 @@ services:
     volumes:
       - ../data/db:/var/lib/mysql
     restart: on-failure
-    environment:
-
-    env_file:
-      - fileName: .env
+    env_file: ".env"
     secrets:
       - mysql_root_password
       - mysql_user_password
+    networks:
+      - inception
+    stdin_open: true  # Allows interactive shell
+    tty: true 
 
   wordpress:
     build:
@@ -21,21 +22,15 @@ services:
     volumes:
       - ../data/wordpress:/var/www/html
     restart: on-failure
-#     environment:
-#       - WP_ADMIN=${WP_ADMIN}
-#       - WP_ADMIN_PW=${WP_ADMIN_PW}
-#       - WP_ADMIN_EMAIL=${WP_ADMIN_EMAIL}
-#       - WP_SECOND_USER=${WP_SECOND_USER}
-#       - WP_SECOND_USER_PW=${WP_SECOND_USER_PW}
-#       - DOMAIN_NAME=${DOMAIN_NAME}
     secrets:
       - mysql_root_password
       - mysql_user_password
       - wp_credentials
-    env_file:
-      - fileName: .env
+    env_file: ".env"
     depends_on:
       - db
+    networks:
+      - inception
 
 secrets:
   mysql_root_password:
@@ -44,6 +39,9 @@ secrets:
     file: ../secrets/db_password.txt
   wp_credentials:
     file: ../secrets/credentials.txt
+
+networks:
+  inception:
 
   # nginx:
   #   image: nginx:latest
