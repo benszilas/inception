@@ -7,8 +7,6 @@ RUN apk update && apk upgrade && apk add --no-cache php php-fpm php-phar php-mys
 RUN mkdir -p /var/www/html && adduser -S www-data -G www-data && chown -R www-data:www-data /var/www/html
 WORKDIR /var/www/html
 
-
-
 #create the wp-config.php file inside the script using wp-cli and create wordpress admin 
 COPY ./conf/setup.sh /tmp/setup.sh
 RUN chmod +x /tmp/setup.sh
