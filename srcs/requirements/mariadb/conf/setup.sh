@@ -4,16 +4,11 @@
 MYSQL_ROOT_PASSWORD=$(cat "$MYSQL_ROOT_PASSWORD_FILE")
 MYSQL_USER_PASSWORD=$(cat "$MYSQL_USER_PASSWORD_FILE")
 
-
-# Ensure proper ownership of MySQL data directory
-chown -R mysql:mysql /var/lib/mysql
-
 if [ ! -d "/var/lib/mysql/mysql" ]; then
 mariadb-install-db --user=mysql --datadir=/var/lib/mysql
 
 # Start MariaDB in background to set up users
 mariadbd --user=mysql --skip-networking &
-pid="$!"
 
 # Secure database and create users
 mariadb -u root <<-EOF
