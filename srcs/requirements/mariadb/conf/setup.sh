@@ -1,25 +1,39 @@
 #!/bin/sh
 
-# Read MySQL root password from Docker secrets
+set -e
+
+if [ ! -d "/var/lib/mysql/mysql" ]; then
+
 MYSQL_ROOT_PASSWORD=$(cat "$MYSQL_ROOT_PASSWORD_FILE")
 MYSQL_USER_PASSWORD=$(cat "$MYSQL_USER_PASSWORD_FILE")
 
-if [ ! -d "/var/lib/mysql/mysql" ]; then
-mariadb-install-db --user=mysql --datadir=/var/lib/mysql
+mariadb-install-db --user="$MYSQL_USER" --datadir=/var/lib/mysql
 
-# Start MariaDB in background to set up users
-mariadbd --user=mysql --skip-networking &
+mariadbd --user="$MYSQL_USER" &
+mariadb_pid=$!
 
-# Secure database and create users
+while [ ! -S "/run/mysqld/mysqld.sock" ]; do
+    echo "waiting for daemon to start..."
+    sleep 1
+done
+echo "daemon started in background"
+
 mariadb -u root <<-EOF
     ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
     CREATE USER '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_USER_PASSWORD}';
     GRANT ALL PRIVILEGES ON *.* TO '${MYSQL_USER}'@'%' WITH GRANT OPTION;
     FLUSH PRIVILEGES;
+    SHUTDOWN;
 EOF
-fi
 
-# Shutdown temp database
-mysqladmin -uroot -p"${MYSQL_ROOT_PASSWORD}" shutdown 
+while ps ax | awk '{print $1}' | grep "$mariadb_pid" ; do
+    echo "waiting for setup to finish..."
+    sleep 1
+done
+
+sleep 5
+
+echo "root and mysql user are set up"
+fi
 
 exec "$@"
