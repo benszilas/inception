@@ -21,6 +21,7 @@ echo "daemon started in background"
 mariadb -u root <<-EOF
     ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
     CREATE USER '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_USER_PASSWORD}';
+    CREATE DATABASE IF NOT EXISTS '${MYSQL_DATABASE}';
     GRANT ALL PRIVILEGES ON *.* TO '${MYSQL_USER}'@'%' WITH GRANT OPTION;
     FLUSH PRIVILEGES;
     SHUTDOWN;
@@ -31,9 +32,15 @@ while ps ax | awk '{print $1}' | grep "$mariadb_pid" ; do
     sleep 1
 done
 
-sleep 5
-
 echo "root and mysql user are set up"
 fi
+
+cat <<-EOF > /etc/my.cnf
+
+    [mysqld]
+    skip-networking=0
+    skip-bind-address
+    port=3306
+EOF
 
 exec "$@"
