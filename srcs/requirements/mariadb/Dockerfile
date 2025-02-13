@@ -10,4 +10,6 @@ COPY conf/setup.sh /tmp/setup.sh
 RUN chmod +x /tmp/setup.sh
 
 ENTRYPOINT ["/tmp/setup.sh"]
-CMD ["mariadbd", "--user=mysql"]
+CMD ["mariadbd", "--user=mysql", "--port=3306"]
+
+# CMD ["/bin/sh"]
