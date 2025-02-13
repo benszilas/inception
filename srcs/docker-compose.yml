@@ -21,7 +21,6 @@ services:
       - ../data/wordpress:/var/www/html
     restart: on-failure
     secrets:
-      - mysql_root_password
       - mysql_user_password
       - wp_credentials
     env_file: ".env"
