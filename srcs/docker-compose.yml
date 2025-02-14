@@ -29,6 +29,21 @@ services:
     networks:
       - inception
 
+  nginx:
+    build:
+      context: requirements/nginx
+    container_name: nginx
+    restart: on-failure
+    ports:
+      - "8443:443"
+    volumes:
+      - ../data/wordpress:/var/www/html
+    env_file: ".env"
+    depends_on:
+      - wordpress
+    networks:
+      - inception
+
 secrets:
   mysql_root_password:
     file: ../secrets/db_root_password.txt
@@ -40,18 +55,3 @@ secrets:
 networks:
   inception:
 
-  # nginx:
-  #   image: nginx:latest
-  #   build:
-  #     context: requirements/nginx
-  #   container_name: nginx
-  #   restart: on-failure
-  #   ports:
-  #     - "8080:80"
-  #   volumes:
-  #     - ./requirements/nginx/conf/:/etc/nginx/conf.d/
-  #     - ../data/wordpress:/var/www/html
-  #   environment:
-  #     - DOMAIN_NAME=${DOMAIN_NAME}
-  #   depends_on:
-  #     - wordpress
