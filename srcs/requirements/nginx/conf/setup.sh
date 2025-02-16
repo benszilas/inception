@@ -16,30 +16,11 @@ if [ ! -f /etc/nginx/nginx.conf.orig ]; then
     mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.orig
 fi
 
-if [ ! -f "$SSL_CERT_FILE" || ! -f "$SSL_KEY_FILE" ]; then
+envsubst '$SSL_CERT_FILE $SSL_KEY_FILE $DOMAIN_NAME' < /tmp/nginx.conf > /etc/nginx/nginx.conf
+
+if [ ! -f "$SSL_CERT_FILE" ] || [ ! -f "$SSL_KEY_FILE" ]; then
+	rm -rf "$SSL_CERT_FILE" "$SSL_KEY_FILE"
     openssl req -new -x509 -nodes -out "$SSL_CERT_FILE" -keyout "$SSL_KEY_FILE"
 fi
-
-cat <<-EOF > /etc/nginx/nginx.conf
-    user www-data;
-    worker_processes auto;
-
-    server {
-        listen              443 ssl;
-        server_name         "$DOMAIN_NAME";
-        ssl_certificate     "$SSL_CERT_FILE";
-        ssl_certificate_key "$SSL_KEY_FILE";
-        ssl_protocols       TLSv1.2 TLSv1.3;
-
-        location / {
-            index.php index.html;
-        }
-
-		location ~ \.php {
-			proxy_pass wordpress:9000
-		}
-
-    }
-EOF
 
 "$@"

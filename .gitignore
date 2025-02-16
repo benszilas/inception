@@ -3,3 +3,8 @@ data/
 
 #secrest
 secrets/
+
+#ssl key
+*.42.fr.key
+*.key
+*.crt

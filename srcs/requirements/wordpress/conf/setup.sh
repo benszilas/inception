@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 MYSQL_USER_PASSWORD=$(cat "$MYSQL_USER_PASSWORD_FILE")
 WP_ADMIN_PASSWORD=$(cat "$WP_CREDENTIALS_FILE")
 
@@ -7,9 +9,10 @@ if [ -f /var/www/html/wp-config.php ]; then
     echo "WordPress already installed"
 else
 
-    wget -q https://wordpress.org/latest.tar.gz && tar -xzf latest.tar.gz -C /var/www/html && rm latest.tar.gz
+	wget -q https://wordpress.org/latest.tar.gz --no-check-certificate \
+	&& tar -xzf latest.tar.gz --strip-components=1 -C /var/www/html \
+	&& rm latest.tar.gz
     chown -R www-data:www-data /var/www/html
-    mv /var/www/html/wordpress/* /var/www/html
 
     wget -q https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && chmod +x wp-cli.phar \
     && mv wp-cli.phar /usr/local/bin/wp
