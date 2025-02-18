@@ -1,25 +1,14 @@
-FROM wordpress:php8.1-fpm
+FROM alpine:3.20
 
-# Install dependencies and WP-CLI
-RUN apt-get update && apt-get install -y \
-    less \
-    mariadb-client \
-    curl \
-    && curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
-    && chmod +x wp-cli.phar \
-    && mv wp-cli.phar /usr/local/bin/wp \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+RUN apk update && apk upgrade && apk add --no-cache php php-fpm php-phar php-mysqli wget \
+php-json php-opcache php-curl php-xml php-mbstring php-gd php-zip php-tokenizer php-ctype php-dom
 
-# Copy the setup script
-COPY ./conf/wp-cli-setup.sh /tmp/wp-cli-setup.sh
-RUN chmod +x /tmp/wp-cli-setup.sh
-	
-# Add a non-root user
-# RUN useradd -m wpuser && chown -R puser:www-data /var/www/html && chown puser:www-data /tmp/wp-cli-setup.sh
+RUN mkdir -p /var/www/html && adduser -S www-data -G www-data \
+&& chown -R www-data:www-data /var/www/html && chown -R www-data:www-data /var/log/php83 && chmod -R 755 /var/www/html
+WORKDIR /var/www/html
 
-# Switch to non-root user
-# USER wpuser
+COPY ./conf/setup.sh /tmp/setup.sh
+RUN chmod +x /tmp/setup.sh
 
-# Set entrypoint
-ENTRYPOINT ["/tmp/wp-cli-setup.sh"]
+ENTRYPOINT ["/tmp/setup.sh"]
+CMD ["php-fpm83", "-F"]

@@ -1,50 +1,60 @@
 services:
+  db:
+    build:
+      context: requirements/mariadb
+    container_name: mariadb
+    volumes:
+      - /home/${USER}/data/db:/var/lib/mysql
+    restart: on-failure
+    env_file: ".env"
+    secrets:
+      - mysql_root_password
+      - mysql_user_password
+    networks:
+      - inception
+
   wordpress:
     build:
       context: requirements/wordpress
     container_name: wordpress
     volumes:
-      - ../data/wordpress:/var/www/html
+      - /home/${USER}/data/wordpress:/var/www/html
     restart: on-failure
-    environment:
-      - X=y
-      - WORDPRESS_DB_HOST=${WORDPRESS_DB_HOST}
-      - WORDPRESS_DB_USER=${WORDPRESS_DB_USER}
-      - WORDPRESS_DB_PASSWORD=${WORDPRESS_DB_PASSWORD}
-      - WORDPRESS_DB_NAME=${WORDPRESS_DB_NAME}
-      - WP_ADMIN=${WP_ADMIN}
-      - WP_ADMIN_PW=${WP_ADMIN_PW}
-      - WP_ADMIN_EMAIL=${WP_ADMIN_EMAIL}
-      - WP_SECOND_USER=${WP_SECOND_USER}
-      - WP_SECOND_USER_PW=${WP_SECOND_USER_PW}
-      - DOMAIN_NAME=${DOMAIN_NAME}
+    secrets:
+      - mysql_user_password
+      - wp_credentials
+    env_file: ".env"
     depends_on:
       - db
-      
-  db:
-    image: mariadb:10.5
-    container_name: mariadb
-    volumes:
-      - ../data/db:/var/lib/mysql
-    restart: on-failure
-    environment:
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    networks:
+      - inception
 
   nginx:
-    # image: nginx:latest
     build:
       context: requirements/nginx
+      args:
+        DOMAIN_NAME: ${DOMAIN_NAME}
+        USER: ${USER}
     container_name: nginx
     restart: on-failure
     ports:
-      - "8080:80"
+      - "443:443"
     volumes:
-      # - ./requirements/nginx/conf/:/etc/nginx/conf.d/
-      - ../data/wordpress:/var/www/html
-    environment:
-      - DOMAIN_NAME=${DOMAIN_NAME}
+      - /home/${USER}/data/wordpress:/var/www/html
+    env_file: ".env"
     depends_on:
       - wordpress
+    networks:
+      - inception
+
+secrets:
+  mysql_root_password:
+    file: ../secrets/db_root_password.txt
+  mysql_user_password:
+    file: ../secrets/db_password.txt
+  wp_credentials:
+    file: ../secrets/credentials.txt
+
+networks:
+  inception:
+
