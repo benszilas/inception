@@ -9,13 +9,11 @@ if [ -f /var/www/html/wp-config.php ]; then
     echo "WordPress already installed"
 else
 
-	wget -q https://wordpress.org/latest.tar.gz --no-check-certificate \
-	&& tar -xzf latest.tar.gz --strip-components=1 -C /var/www/html \
+	wget -q https://wordpress.org/latest.tar.gz --no-check-certificate && tar -xzf latest.tar.gz --strip-components=1 -C /var/www/html \
 	&& rm latest.tar.gz
     chown -R www-data:www-data /var/www/html
 
-    wget -q https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar --no-check-certificate \
-    && chmod +x wp-cli.phar \
+    wget -q https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar --no-check-certificate && chmod +x wp-cli.phar \
     && mv wp-cli.phar /usr/local/bin/wp
 
     wp config create --dbname="$MYSQL_DATABASE" --dbuser="$MYSQL_USER" --dbpass="$MYSQL_USER_PASSWORD"\
