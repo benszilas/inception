@@ -11,6 +11,6 @@ down:
 	cd srcs && docker-compose down
 
 remove: down
-	cd srcs && docker image prune -a --filter="label!=alpine"
+	cd srcs && docker image prune -a
 
 .PHONY: up re down remove

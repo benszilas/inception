@@ -19,9 +19,11 @@ else
     wp config create --dbname="$MYSQL_DATABASE" --dbuser="$MYSQL_USER" --dbpass="$MYSQL_USER_PASSWORD"\
         --dbhost="$DB_HOST" --allow-root --path=/var/www/html
 
-    wp core install --url=https://"$DOMAIN_NAME:8443" --title="$WP_TITLE" \
+    wp core install --url=https://"$DOMAIN_NAME:443" --title="$WP_TITLE" \
         --admin_user="$WP_ADMIN" --admin_password="$WP_ADMIN_PASSWORD" --admin_email="$WP_ADMIN_EMAIL" \
         --skip-email --allow-root
+
+    wp user create bszilas example@server.com --user_pass="$WP_ADMIN_PASSWORD"_user --allow-root
 
 fi
 
