@@ -4,7 +4,7 @@ services:
       context: requirements/mariadb
     container_name: mariadb
     volumes:
-      - ../data/db:/var/lib/mysql
+      - /home/${USER}/data/db:/var/lib/mysql
     restart: on-failure
     env_file: ".env"
     secrets:
@@ -18,7 +18,7 @@ services:
       context: requirements/wordpress
     container_name: wordpress
     volumes:
-      - ../data/wordpress:/var/www/html
+      - /home/${USER}/data/wordpress:/var/www/html
     restart: on-failure
     secrets:
       - mysql_user_password
@@ -34,12 +34,13 @@ services:
       context: requirements/nginx
       args:
         DOMAIN_NAME: ${DOMAIN_NAME}
+        USER: ${USER}
     container_name: nginx
     restart: on-failure
     ports:
-      - "8443:443"
+      - "443:443"
     volumes:
-      - ../data/wordpress:/var/www/html
+      - /home/${USER}/data/wordpress:/var/www/html
     env_file: ".env"
     depends_on:
       - wordpress
