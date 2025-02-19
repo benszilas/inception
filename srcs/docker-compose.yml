@@ -4,7 +4,7 @@ services:
       context: requirements/mariadb
     container_name: mariadb
     volumes:
-      - /home/${USER}/data/db:/var/lib/mysql
+      - db_data:/var/lib/mysql
     restart: on-failure
     env_file: ".env"
     secrets:
@@ -12,20 +12,26 @@ services:
       - mysql_user_password
     networks:
       - inception
+    healthcheck:
+      test: ["CMD-SHELL", "/tmp/healthcheck.sh || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   wordpress:
     build:
       context: requirements/wordpress
     container_name: wordpress
     volumes:
-      - /home/${USER}/data/wordpress:/var/www/html
+      - wordpress:/var/www/html
     restart: on-failure
     secrets:
       - mysql_user_password
       - wp_credentials
     env_file: ".env"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - inception
 
@@ -34,13 +40,12 @@ services:
       context: requirements/nginx
       args:
         DOMAIN_NAME: ${DOMAIN_NAME}
-        USER: ${USER}
     container_name: nginx
     restart: on-failure
     ports:
       - "443:443"
     volumes:
-      - /home/${USER}/data/wordpress:/var/www/html
+      - wordpress:/var/www/html
     env_file: ".env"
     depends_on:
       - wordpress
@@ -58,3 +63,6 @@ secrets:
 networks:
   inception:
 
+volumes:
+  db_data:
+  wordpress:

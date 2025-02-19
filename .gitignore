@@ -8,3 +8,6 @@ secrets/
 *.42.fr.key
 *.key
 *.crt
+
+#environment
+*.env

@@ -1,15 +1,15 @@
 #!/bin/sh
 
-envsubst '$SSL_CERT_FILE $SSL_KEY_FILE $DOMAIN_NAME' < /tmp/"$DOMAIN_NAME".conf > /etc/nginx/http.d/"$DOMAIN_NAME".conf
-echo server config copied with status: $?
-
-#self-signed certificate for school project - therefore ok to use this backup
-if [ ! -f "$SSL_CERT_FILE" ] || [ ! -f "$SSL_KEY_FILE" ]; then
-    echo "Generating self-signed certificate..."
-	rm -rf "$SSL_CERT_FILE" "$SSL_KEY_FILE"
-    openssl req -new -x509 -nodes -out "$SSL_CERT_FILE" -keyout "$SSL_KEY_FILE"
-else
-    echo "Using provided certificate..."
+if [ ! -d "/etc/ssl/private" ]; then
+	mkdir -p /etc/ssl/private
 fi
+
+#since this is a school project, we are just signing a new certificate each time
+openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 \
+-subj "/C=AT/ST=Wien/L=Wien/O=42/CN=$DOMAIN_NAME" \
+-keyout /etc/ssl/private/"$DOMAIN_NAME".key  -out /etc/ssl/private/"$DOMAIN_NAME".crt
+
+envsubst '$DOMAIN_NAME' < /tmp/"$DOMAIN_NAME".conf > /etc/nginx/http.d/"$DOMAIN_NAME".conf
+echo server config copied with status: $?
 
 "$@"
