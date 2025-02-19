@@ -1,6 +1,8 @@
 # inception
 
-This is my first try at hosting something on a LEMP stack. Its a school project to host a wordpress site :
+This is my first try at setting up a LEMP stack the hard way, without pre-built images besides an Alpine base image.
+
+Its a 42 school project to host a wordpress site :
 
 • A Docker container that contains NGINX with TLSv1.2 or TLSv1.3 only.
 
