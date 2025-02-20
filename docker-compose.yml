@@ -1,8 +1,8 @@
 services:
   db:
     build:
-      context: srcs/requirements/mariadb
-    container_name: mariadb
+      context: srcs/db
+    container_name: db
     volumes:
       - db_data:/var/lib/mysql
     restart: on-failure
@@ -14,13 +14,13 @@ services:
       - inception
     healthcheck:
       test: ["CMD-SHELL", "/tmp/healthcheck.sh || exit 1"]
-      interval: 5s
+      interval: 2s
       timeout: 5s
-      retries: 5
+      retries: 10
 
   wordpress:
     build:
-      context: srcs/requirements/wordpress
+      context: srcs/wordpress
     container_name: wordpress
     volumes:
       - wordpress:/var/www/html
@@ -37,7 +37,7 @@ services:
 
   nginx:
     build:
-      context: srcs/requirements/nginx
+      context: srcs/nginx
       args:
         DOMAIN_NAME: ${DOMAIN_NAME}
     container_name: nginx

@@ -31,8 +31,6 @@ else
         --admin_user="$WP_ADMIN" --admin_password="$WP_ADMIN_PASSWORD" --admin_email="$WP_ADMIN_EMAIL" \
         --skip-email --allow-root
 
-    wp user create bszilas example@server.com --user_pass="$WP_ADMIN_PASSWORD"_user --allow-root
-
 fi
 
 #if the host or port is changed in the environment variables, update the siteurl in the persistent database
