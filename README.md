@@ -16,14 +16,14 @@ Its a 42 school project to host a wordpress site :
 
 • A docker-network that establishes the connection between containers.
 
-## 1. you need to create the passwords of your choice for docker secrets. 
+## 1. you need to create some passwords for docker secrets.
 
 ```sh
 #make the secrets directory in the root of this repo
-mkdir secrets; \
-echo -n "your-db-root-password" > secrets/db_root_password.txt; \
-echo -n "your-db-non-root-password" > secrets/db_password.txt; \
-echo -n "your-wordpress-admin-password" > secrets/credentials.txt
+mkdir -p secrets; \
+< /dev/urandom tr -dc 'A-Za-z0-9' | head -c 16 > secrets/db_root_password.txt; \
+< /dev/urandom tr -dc 'A-Za-z0-9' | head -c 16 > secrets/db_password.txt; \
+< /dev/urandom tr -dc 'A-Za-z0-9' | head -c 16 > secrets/credentials.txt
 ```
 
 ## 2. Edit the environment file .env.example for docker-compose with the values of your choice
