@@ -1,7 +1,7 @@
 services:
   db:
     build:
-      context: requirements/mariadb
+      context: srcs/requirements/mariadb
     container_name: mariadb
     volumes:
       - db_data:/var/lib/mysql
@@ -20,7 +20,7 @@ services:
 
   wordpress:
     build:
-      context: requirements/wordpress
+      context: srcs/requirements/wordpress
     container_name: wordpress
     volumes:
       - wordpress:/var/www/html
@@ -37,13 +37,13 @@ services:
 
   nginx:
     build:
-      context: requirements/nginx
+      context: srcs/requirements/nginx
       args:
         DOMAIN_NAME: ${DOMAIN_NAME}
     container_name: nginx
     restart: on-failure
     ports:
-      - "443:443"
+      - "${PORT_NO}:443"
     volumes:
       - wordpress:/var/www/html
     env_file: ".env"
@@ -54,11 +54,11 @@ services:
 
 secrets:
   mysql_root_password:
-    file: ../secrets/db_root_password.txt
+    file: secrets/db_root_password.txt
   mysql_user_password:
-    file: ../secrets/db_password.txt
+    file: secrets/db_password.txt
   wp_credentials:
-    file: ../secrets/credentials.txt
+    file: secrets/credentials.txt
 
 networks:
   inception:

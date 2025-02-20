@@ -5,7 +5,7 @@ ARG DOMAIN_NAME
 RUN apk update && apk add --no-cache nginx openssl gettext-envsubst
 
 COPY ./conf/setup.sh /tmp/setup.sh
-COPY ./conf/bszilas.42.fr.conf /tmp/${DOMAIN_NAME}.conf
+COPY ./conf/localhost.conf /tmp/${DOMAIN_NAME}.conf
 
 RUN chmod +x /tmp/setup.sh \
 && mkdir -p /etc/nginx/http.d \

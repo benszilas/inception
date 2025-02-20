@@ -26,22 +26,20 @@ echo -n "your-db-non-root-password" > secrets/db_password.txt; \
 echo -n "your-wordpress-admin-password" > secrets/credentials.txt
 ```
 
-## 2. Edit the environment for docker-compose with database names, usernames, hostname. or use the default one
+## 2. Edit the environment file .env.example for docker-compose with the values of your choice
 
-variables in the .env.example need to be valid!
-
-then copy .env.example in srcs/.env
+then copy .env.example in .env
 
 ```sh
-cp .env.example ./srcs/.env
+cp .env.example .env
 ```
 
 ## 3. start the services
 ```sh
-cd srcs && docker-compose up -d
+docker-compose up -d
 ```
 
-Using a self-signed TLS/SSL certificate - site available at https://localhost
+Using a self-signed TLS/SSL certificate - site available by default at https://localhost:8443
 
 For a custom domain name edit DOMAIN_NAME in the .env file and /etc/hosts 
 (and remove / rebuild the images if they are already built)
